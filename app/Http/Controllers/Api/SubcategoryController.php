@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Subcategory;
-
+use Illuminate\Http\Request;
+use App\Http\Resources\SubcategoryResource;
 
 class SubcategoryController extends Controller
 {
@@ -17,8 +17,7 @@ class SubcategoryController extends Controller
     public function index()
     {
         $subcategories=Subcategory::all();
-        return $subcategories;
-       
+        return SubcategoryResource::collection($subcategories);
     }
 
     /**
@@ -29,28 +28,43 @@ class SubcategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $request->validate([
+        'name' => 'required|string',
+        'category' => 'required',
+        ]);
+
+         
+
+
+        //Store Data
+          $subcategory=new Subcategory;
+          $subcategory->name=$request->name;
+          $subcategory->category_id=$request->category;
+          
+
+          $subcategory->save();
+          return new SubcategoryResource($subcategory);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Subcategory  $subcategory
      * @return \Illuminate\Http\Response
      */
     public function show(Subcategory $subcategory)
     {
-        return $subcategory; 
+        return new SubcategoryResource($subcategory);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Subcategory  $subcategory
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Subcategory $subcategory)
     {
         //
     }
@@ -58,10 +72,10 @@ class SubcategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Subcategory  $subcategory
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Subcategory $subcategory)
     {
         //
     }

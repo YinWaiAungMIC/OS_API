@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
+use App\Brand;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Brand;
+use App\Http\Resources\BrandResource;
 
 class BrandController extends Controller
 {
@@ -15,8 +16,8 @@ class BrandController extends Controller
      */
     public function index()
     {
-         $brands=Brand::all();
-        return $brands;
+        $brands=Brand::all();
+        return BrandResource::collection($brands);
     }
 
     /**
@@ -27,28 +28,48 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+        'name' => 'required|string',
+        'photo' => 'required|mimes:jpeg,bmp,png',
+        ]);
+
+         //File Upload
+         $imageName = time().'.'.$request->photo->extension();  
+   
+        $request->photo->move(public_path('backendtemplate/brandimg'), $imageName);
+          $myfile='backendtemplate/brandimg/'.$imageName;
+
+
+        //Store Data
+          $brand=new Brand;
+          $brand->name=$request->name;
+          $brand->photo=$myfile;
+          
+
+          $brand->save();
+          return new BrandResource($brand);
+
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
     public function show(Brand $brand)
     {
-        return $brand;
+        return new BrandResource($brand);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Brand $brand)
     {
         //
     }
@@ -56,10 +77,10 @@ class BrandController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Brand  $brand
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Brand $brand)
     {
         //
     }

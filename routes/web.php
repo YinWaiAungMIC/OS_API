@@ -16,7 +16,5 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::apiresource('brands','Api\BrandController');
-Route::apiresource('categories','Api\CategoryController');
-Route::apiresource('subcategories','Api\SubcategoryController');
+
 

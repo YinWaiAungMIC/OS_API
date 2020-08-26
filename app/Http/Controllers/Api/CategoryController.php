@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
+use App\Category;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Category;
-
+use App\Http\Resources\CategoryResource;
 class CategoryController extends Controller
 {
     /**
@@ -15,8 +15,8 @@ class CategoryController extends Controller
      */
     public function index()
     {
-       $categories=Category::all();
-       return $categories;
+        $categories=Category::all();
+        return CategoryResource::collection($categories);
     }
 
     /**
@@ -27,28 +27,47 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+        'name' => 'required|string',
+        'photo' => 'required|mimes:jpeg,bmp,png',
+        ]);
+
+         //File Upload
+         $imageName = time().'.'.$request->photo->extension();  
+   
+        $request->photo->move(public_path('backendtemplate/categoryimg'), $imageName);
+          $myfile='backendtemplate/categoryimg/'.$imageName;
+
+
+        //Store Data
+          $category=new Category;
+          $category->name=$request->name;
+          $category->photo=$myfile;
+          
+
+          $category->save();
+          return new CategoryResource($category);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $categories)
+    public function show(Category $category)
     {
-        return $categories;
+        return new CategoryResource($category);
     }
 
     /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Category $category)
     {
         //
     }
@@ -56,10 +75,10 @@ class CategoryController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  \App\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Category $category)
     {
         //
     }
