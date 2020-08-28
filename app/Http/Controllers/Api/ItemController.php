@@ -11,9 +11,9 @@ class ItemController extends Controller
 {
 
     public function __construct($value='')
-  {
-    $this->middleware('auth:api')->except('index');
-  }
+    {
+        $this->middleware('auth:api')->except('index','filter','search');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -37,40 +37,40 @@ class ItemController extends Controller
     public function store(Request $request)
     {
         $validator= $request->validate([
-        'codeno' => 'required|string',
-        'name' => 'required|string',
-        'photo' => 'required|mimes:jpeg,bmp,png',
-        'price' => 'required|integer',
-        'discount' => 'required|integer',
-        'description' => 'required|string',
-        'brand' => 'required',
-        'subcategory' => 'required',
-]);
-       
+            'codeno' => 'required|string',
+            'name' => 'required|string',
+            'photo' => 'required|mimes:jpeg,bmp,png',
+            'price' => 'required|integer',
+            'discount' => 'required|integer',
+            'description' => 'required|string',
+            'brand' => 'required',
+            'subcategory' => 'required',
+        ]);
 
-      
+
+
 
 
         //File Upload
-         $imageName = time().'.'.$request->photo->extension();  
-   
+        $imageName = time().'.'.$request->photo->extension();  
+
         $request->photo->move(public_path('backendtemplate/itemimg'), $imageName);
-          $myfile='backendtemplate/itemimg/'.$imageName;
+        $myfile='backendtemplate/itemimg/'.$imageName;
 
 
         //Store Data
-          $item=new Item;
-          $item->codeno=$request->codeno;
-          $item->name=$request->name;
-          $item->photo=$myfile;
-          $item->price=$request->price;
-          $item->discount=$request->discount;
-          $item->description=$request->description;
-          $item->brand_id=$request->brand;
-          $item->subcategory_id=$request->subcategory;
+        $item=new Item;
+        $item->codeno=$request->codeno;
+        $item->name=$request->name;
+        $item->photo=$myfile;
+        $item->price=$request->price;
+        $item->discount=$request->discount;
+        $item->description=$request->description;
+        $item->brand_id=$request->brand;
+        $item->subcategory_id=$request->subcategory;
 
-          $item->save();
-          return new ItemResource($item);
+        $item->save();
+        return new ItemResource($item);
 
 
     }
@@ -108,4 +108,53 @@ class ItemController extends Controller
     {
         //
     }
+    public function filter($sid,$bid)
+    {
+        $items=array();
+        if($sid && $bid){
+            $items=Item::where('subcategory_id',$sid)->where('brand_id',$bid)->get();
+
+        }else {
+            $items=Item::where('subcategory_id',$sid)->or_where('brand_id',$bid)->get();
+        }
+        return $items;
+
+        
+    }
+
+
+    public function search(Request $request) {
+        $name = $request->get('name');
+        $sid=$request->get('subcategory');
+        $bid=$request->get('brand');
+        $search=array();
+
+
+
+   if($name || $sid || $bid){// if something have do condition
+
+    if($name && $sid && $bid){//All data include
+        $search = Item::where('subcategory_id',$sid)->where('brand_id',$bid)->where('name', 'like', "%{$name}%")->get();
+    
+    }else if($name && $sid){//if name and subcategory include
+        $search=Item::where('subcategory_id',$sid)->where('name', 'like', "%{$name}%")->get();
+    }
+    else if($name && $bid){//if name and brand contain
+        $search=Item::where('brand_id',$bid)->where('name', 'like', "%{$name}%")->get();
+    }
+    else if($sid && $bid){//if subcategory and brand exist
+        $search=Item::where('subcategory_id',$sid)->where('brand_id',$bid)->get();
+    }else if($sid || $bid){//if subcategory or brand
+        $search=Item::where('subcategory_id',$sid)->orWhere('brand_id',$bid)->get();
+
+    }else{//if subcategory or name
+       $search=Item::where('subcategory_id',$sid)->orWhere('name', 'like', "%{$name}%")->get();
+
+   }
+
+}else{//if no display all items
+    $search=Item::all();
+}
+return $search;
+}
 }
