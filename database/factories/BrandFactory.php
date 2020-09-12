@@ -8,8 +8,8 @@ use Faker\Generator as Faker;
 $factory->define(Brand::class, function (Faker $faker) {
     
        return [
-    	'name' => $faker->company,
-    	'photo' => 'backendtemplate/brandimg/'.$faker->image('public/backendtemplate/brandimg', 200, 150, 'fashion', null, false)
+    	'name' => $faker->name,
+    	'photo' => 'backendtemplate/brandimg/'.$faker->image('public/backendtemplate/brandimg', 400, 300,null, false),
 ];
     
 });

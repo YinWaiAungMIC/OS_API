@@ -17,7 +17,11 @@ class SubcategoryController extends Controller
     public function index()
     {
         $subcategories=Subcategory::all();
-        return SubcategoryResource::collection($subcategories);
+        return response()->json([
+            'status' => 'ok',
+            'totalResults' => count($subcategories),
+            'items' => SubcategoryResource::collection($subcategories)
+]);
     }
 
     /**
@@ -28,7 +32,7 @@ class SubcategoryController extends Controller
      */
     public function store(Request $request)
     {
-         $request->validate([
+         /*$request->validate([
         'name' => 'required|string',
         'category' => 'required',
         ]);
@@ -43,7 +47,7 @@ class SubcategoryController extends Controller
           
 
           $subcategory->save();
-          return new SubcategoryResource($subcategory);
+          return new SubcategoryResource($subcategory);*/
     }
 
     /**

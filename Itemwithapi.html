@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Working with API</title>
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+	<div id="app">
+		<div class="container">
+			<div class="row">
+				<div v-for="currency in info" :key="currency.rate_float" class="col-md-4">
+					<p class="text-dark">{{currency.code}}(<span>{{currency.description}}</span>)</p>
+					<p class="text-danger"><span v-html="currency.symbol"></span>{{currency.rate_float |currencydecimal}}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+		var app=new Vue({
+			el:'#app',
+			data:{
+				info:null
+			},
+			mounted(){
+				axios.get('https://api.coindesk.com/v1/bpi/currentprice.json')
+					 .then(res=>{
+					 	this.info=res.data.bpi;
+					 })
+			},
+			filters: {
+  				currencydecimal (value) {
+    			return value.toFixed(2)
+  							}
+					}
+		})
+	</script>
+
+</body>
+</html>

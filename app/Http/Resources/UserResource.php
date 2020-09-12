@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BrandResource extends JsonResource
+class UserResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -12,18 +12,14 @@ class BrandResource extends JsonResource
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
-    public static $wrap = 'brand';
+     public static $wrap = 'user';
     public function toArray($request)
     {
-        //return parent::toArray($request);
         return [
-            "brand_id"=>$this->id,
-            "brand_name"=>$this->name,
-            "brand_photo"=>url($this->photo),
+            'user_id' => $this->id,
+            'user_name' => $this->name,
             'created_at' => $this->created_at,
-'updated_at' => $this->updated_at,
-
-
-        ];
+            'updated_at' => $this->updated_at,
+];
     }
 }

@@ -7,7 +7,7 @@ use Faker\Generator as Faker;
 
 $factory->define(Subcategory::class, function (Faker $faker) {
     return [
-        'name' => $faker->colorName,
-		'category_id' => App\Category::all(['id'])->random()
+        'name' => $faker->name,
+		'category_id' =>  random_int(\DB::table('categories')->min('id'),\DB::table('categories')->max('id')),
     ];
 });

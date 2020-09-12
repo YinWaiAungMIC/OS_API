@@ -10,10 +10,10 @@ use App\Http\Resources\ItemResource;
 class ItemController extends Controller
 {
 
-    public function __construct($value='')
+    /*public function __construct($value='')
     {
         $this->middleware('auth:api')->except('index','filter','search');
-    }
+    }*/
     /**
      * Display a listing of the resource.
      *
@@ -70,7 +70,9 @@ class ItemController extends Controller
         $item->subcategory_id=$request->subcategory;
 
         $item->save();
-        return new ItemResource($item);
+        return (new ItemResource($item))
+                    ->response()
+->setStatusCode(201);
 
 
     }
@@ -157,4 +159,33 @@ class ItemController extends Controller
 }
 return $search;
 }
+
+ public function byBrand(Request $request)
+    {
+        $bid = $request->brand;
+
+        $items = Item::where('brand_id',$bid)->get();
+        // For Case Sensitive (collation => utf8_bin) 
+        
+        return response()->json([
+            'status' => 'ok',
+            'totalResults' => count($items),
+            'items' => ItemResource::collection($items)
+        ]);
+    }
+
+    public function bySubcategory(Request $request)
+    {
+        $sid = $request->subcategory;
+
+        $items = Item::where('subcategory_id',$sid)->get();
+        // For Case Sensitive (collation => utf8_bin)
+        
+        return response()->json([
+            'status' => 'ok',
+            'totalResults' => count($items),
+            'items' => ItemResource::collection($items)
+        ]);
+}
+
 }

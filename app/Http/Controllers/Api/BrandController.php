@@ -17,7 +17,11 @@ class BrandController extends Controller
     public function index()
     {
         $brands=Brand::all();
-        return BrandResource::collection($brands);
+        return response()->json([
+            'status' => 'ok',
+            'totalResults' => count($brands),
+            'items' => BrandResource::collection($brands)
+]);
     }
 
     /**
@@ -28,7 +32,7 @@ class BrandController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
+        /*$request->validate([
         'name' => 'required|string',
         'photo' => 'required|mimes:jpeg,bmp,png',
         ]);
@@ -48,7 +52,7 @@ class BrandController extends Controller
 
           $brand->save();
           return new BrandResource($brand);
-
+*/
     }
 
     /**
